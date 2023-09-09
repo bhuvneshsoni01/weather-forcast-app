@@ -1,29 +1,33 @@
 // import { Express } from "express";
 // import request from "request";
 const Express = require("express");
-const request = require("request");
+const cors = require('cors');
 
+
+const api_key = '812dafbcf6ece97388b52e72e2ee1aec';
 
 const App = Express();
-const api_key = '812dafbcf6ece97388b52e72e2ee1aec';
+App.use(cors({
+	origin: 'http://localhost:3000',
+}))
 
 App.get('/', async (req,res) => {
     const city = req.query.city;
-	// request(
-	// 	`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${api_key}`,
-	// 	function(error, response, body, city) {
-	// 		// let data = JSON.parse(body);
-	// 		if (response.statusCode === 200) {
-	// 			// res.send(`${data}`)
-	// 			console.log(body)
-	// 			res.send(body);
-	// 		}
-	// 	}
-	// );
+	const unit = req.query.unit == 'Celsius' ? 'metric':(req.query.unit == 'Kelvin' ? 'standard' : 'imperial');
+
 	try{
-		const body = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=812dafbcf6ece97388b52e72e2ee1aec`)
-			.then(response => response.json());
-		res.send(body);
+		await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=${unit}&appid=812dafbcf6ece97388b52e72e2ee1aec`)
+			.then(response => response.json())
+			.then((data) => {
+				const reqData = {
+				 weatherDescription : data.weather[0].description,
+				 weatherIcon: `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`,
+				 temperature : data.main.temp,
+				 humidity : data.main.humidity,
+				 city: data.name,
+				}
+				res.send(JSON.stringify(reqData));
+			})
 	}catch(err){
 		res.send(err)
 	}

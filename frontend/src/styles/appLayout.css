@@ -1,0 +1,13 @@
+body{
+    background-color: rgb(0, 171, 80);
+    margin: 0;
+    padding: 0;
+}
+
+.container{
+    width: inherit;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
